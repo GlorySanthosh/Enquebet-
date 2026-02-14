@@ -3,318 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENQUEbet | Depth Edition</title>
+    <title>ENQUEbet | Depth Shader UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #07080c;
+            --bg-midnight: #05060b;
             --sidebar-bg: #0d0e14;
             --card-bg: #14151f;
             --accent-blue: #0084ff;
             --accent-purple: #7000ff;
-            
-            /* --- Layered Shadow Toolkit --- */
-            --shadow-elevation: 
-                0 10px 20px rgba(0,0,0,0.6), 
-                0 6px 6px rgba(0,0,0,0.4),
-                inset 0 1px 1px rgba(255,255,255,0.05);
-            
-            --blue-glow: 
-                0 0 5px rgba(0, 132, 255, 0.4),
-                0 0 15px rgba(0, 132, 255, 0.2),
-                0 0 30px rgba(0, 132, 255, 0.1);
-                
-            --purple-glow: 
-                0 0 10px rgba(112, 0, 255, 0.5),
-                0 0 25px rgba(112, 0, 255, 0.3),
-                0 10px 20px rgba(0,0,0,0.4);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
 
-            --text-dim: #8a8f9d;
+            /* --- The Shader Suite --- */
+            --shadow-elevation: 
+                0 20px 40px rgba(0,0,0,0.8), 
+                0 8px 15px rgba(0,0,0,0.6),
+                inset 0 1px 1px rgba(255,255,255,0.05);
+            --inner-carve: inset 0 4px 12px rgba(0,0,0,0.9);
+            --purple-glow: 0 0 15px rgba(112, 0, 255, 0.5);
+            --blue-glow: 0 0 12px rgba(0, 132, 255, 0.4);
         }
 
+        * { box-sizing: border-box; transition: 0.2s ease; }
         body {
             margin: 0;
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: #ececec;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-midnight);
+            color: var(--text-main);
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* --- Sidebar --- */
+        /* --- SIDEBAR (All Items Restored) --- */
         .sidebar {
             width: 250px;
             background: var(--sidebar-bg);
-            border-right: 1px solid #1f212d;
-            padding: 25px;
+            border-right: 1px solid var(--glass-border);
+            padding: 25px 15px;
             display: flex;
             flex-direction: column;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            box-shadow: 15px 0 40px rgba(0,0,0,0.6);
             z-index: 10;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            margin-bottom: 40px;
-            letter-spacing: -1px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        .brand-header { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
+        .brand-icon {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: linear-gradient(135deg, #1e1e2e, #0a0b12);
+            border: 1px solid #3d3f4f;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         .nav-item {
-            padding: 14px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            padding: 10px 12px;
+            display: flex; align-items: center; gap: 12px;
             color: var(--text-dim);
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            text-decoration: none; border-radius: 10px;
+            font-size: 0.9rem;
         }
+        .nav-item:hover { background: rgba(255,255,255,0.03); color: white; box-shadow: var(--inner-carve); }
+        .nav-item i { width: 18px; text-align: center; }
 
-        .nav-item:hover {
-            background: rgba(255,255,255,0.03);
-            color: white;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        /* --- Feed Area --- */
+        /* --- FEED AREA --- */
         .main-feed {
             flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            background: radial-gradient(circle at top, #161823 0%, #07080c 100%);
-        }
-
-        .feed-container { width: 100%; max-width: 680px; margin: 0 auto; }
-
-        .tab-row {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 35px;
-        }
-
-        .tab {
-            padding: 10px 30px;
-            border-radius: 25px;
-            background: #1a1b26;
-            border: 1px solid #2d2f3f;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            transition: 0.3s;
-        }
-
-        .tab.active {
-            background: var(--accent-purple);
-            box-shadow: var(--purple-glow);
-            border: none;
-        }
-
-        /* --- Cards --- */
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.03);
-            box-shadow: var(--shadow-elevation);
-        }
-
-        .input-glow {
-            background: #0a0b12;
-            border: 1.5px solid var(--accent-blue);
-            box-shadow: var(--blue-glow), inset 0 2px 5px rgba(0,0,0,0.8);
-            padding: 12px 20px;
-            border-radius: 12px;
-            width: 100%;
-        }
-
-        /* --- Post Depth --- */
-        .post-inner-box {
-            background: #090a0f;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: inset 0 4px 15px rgba(0,0,0,0.8);
-            margin: 15px 0;
-            border: 1px solid rgba(255,255,255,0.02);
+            overflow-y: auto;
+            background: radial-gradient(circle at top, #11121a 0%, var(--bg-midnight) 100%);
         }
+        .feed-content { width: 100%; max-width: 680px; margin: 0 auto; }
 
-        .img-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 20px;
+        .top-tabs {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 30px;
         }
-
-        .img-placeholder {
-            background: #fff;
-            height: 150px;
-            border-radius: 10px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-            font-size: 11px;
-            font-weight: bold;
-            transition: transform 0.3s;
+        .tab {
+            padding: 8px 35px; border-radius: 20px;
+            background: #1a1b26; border: 1px solid #2d2f3f;
+            color: var(--text-dim); font-weight: 600; font-size: 0.85rem; cursor: pointer;
         }
-        
-        .img-placeholder:hover { transform: scale(1.02); }
+        .tab.active { background: var(--accent-purple); color: white; box-shadow: var(--purple-glow); border: none; }
 
-        .glow-btn {
-            background: var(--accent-purple);
-            border: none;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 10px;
-            font-weight: 800;
-            box-shadow: var(--purple-glow);
-            cursor: pointer;
-            transition: 0.2s;
+        /* --- INPUT AREA --- */
+        .input-card {
+            background: var(--card-bg); padding: 20px;
+            border-radius: 20px; margin-bottom: 25px; box-shadow: var(--shadow-elevation);
         }
+        .avatar-box { width: 45px; height: 45px; border-radius: 50%; background: #2a2c3a; display: flex; align-items: center; justify-content: center; border: 1px solid #3d3f4f; }
+        .input-field { flex: 1; background: #0a0b12; border: 1.5px solid var(--accent-blue); box-shadow: var(--blue-glow), var(--inner-carve); padding: 12px 20px; border-radius: 12px; color: var(--text-dim); font-size: 0.85rem; }
 
-        .glow-btn:active { transform: translateY(2px); box-shadow: 0 5px 10px rgba(0,0,0,0.4); }
-
-        .blue-btn {
-            background: var(--accent-blue);
-            box-shadow: var(--blue-glow);
-            border: none; color: #fff; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px;
+        /* --- POST CARD --- */
+        .post-card {
+            background: var(--card-bg); border-radius: 24px; padding: 25px;
+            box-shadow: var(--shadow-elevation); margin-bottom: 30px;
         }
-
-        /* --- Right Sidebar --- */
-        .right-sidebar {
-            width: 320px;
-            padding: 30px;
-            background: rgba(10, 11, 16, 0.8);
-            border-left: 1px solid #1f212d;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        .post-inner-box {
+            background: #090a0f; padding: 20px; border-radius: 15px;
+            box-shadow: var(--inner-carve); border: 1px solid rgba(255,255,255,0.02); margin: 15px 0;
         }
-
-        .profile-card {
-            background: linear-gradient(145deg, #1b1c26, #14151f);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: var(--shadow-elevation);
+        .attachment-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .attachment-chip {
+            background: #1a1b26; border: 1px solid var(--accent-blue); border-radius: 6px;
+            padding: 5px 12px; font-size: 10px; color: var(--text-dim); display: flex; align-items: center; gap: 8px;
         }
+        .tag { background: var(--accent-blue); color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; }
 
-        .avatar-glow {
-            width: 85px; height: 85px; border-radius: 50%;
-            border: 3px solid var(--accent-purple);
-            box-shadow: var(--purple-glow);
-            margin-bottom: 15px;
-        }
+        .img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .img-box { background: white; height: 120px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #333; font-size: 9px; font-weight: bold; text-align: center; }
 
-        .news-item {
-            background: #0c0d13;
-            padding: 18px;
-            border-radius: 12px;
-            margin-top: 15px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
-            border-left: 4px solid var(--accent-purple);
-        }
+        /* --- RIGHT SIDEBAR --- */
+        .right-sidebar { width: 310px; padding: 25px; background: rgba(5,6,11,0.6); border-left: 1px solid var(--glass-border); box-shadow: -15px 0 40px rgba(0,0,0,0.6); }
+        .profile-widget { background: var(--card-bg); border-radius: 20px; padding: 25px; text-align: center; box-shadow: var(--shadow-elevation); margin-bottom: 25px; }
+        .news-widget { background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-elevation); }
+        .news-item { background: #0c0d13; padding: 12px; border-radius: 10px; margin-top: 12px; box-shadow: var(--inner-carve); border-left: 3px solid var(--accent-purple); font-size: 11px; line-height: 1.4; }
 
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="logo"><i class="fas fa-cube" style="color: var(--accent-blue);"></i> ENQUEbet</div>
-        <a href="#" class="nav-item"><i class="fas fa-home"></i> Home</a>
-        <a href="#" class="nav-item"><i class="fas fa-search"></i> Search</a>
-        <a href="#" class="nav-item"><i class="fas fa-paper-plane"></i> Post</a>
-        <a href="#" class="nav-item"><i class="fas fa-envelope"></i> Message</a>
-        <a href="#" class="nav-item"><i class="fas fa-bell"></i> Notification</a>
-        <a href="#" class="nav-item"><i class="fas fa-user-circle"></i> Profile</a>
-        <a href="#" class="nav-item"><i class="fas fa-microchip"></i> Quebet AI</a>
-        <a href="#" class="nav-item"><i class="fas fa-book-open"></i> Courses</a>
-        <div style="margin-top: auto; color: var(--text-dim); font-size: 14px;"><i class="fas fa-cog"></i> Settings</div>
+        <div class="brand-header">
+            <div class="brand-icon"><span style="color:white; font-weight:900;">t</span></div>
+            <div style="font-size: 20px; font-weight: 800; color: white;">ENQUEbet</div>
+        </div>
+        <nav>
+            <a href="#" class="nav-item"><i class="fas fa-home"></i> Home</a>
+            <a href="#" class="nav-item"><i class="fas fa-search"></i> Search</a>
+            <a href="#" class="nav-item"><i class="fas fa-plus"></i> Post</a>
+            <a href="#" class="nav-item"><i class="fas fa-comment"></i> Message</a>
+            <a href="#" class="nav-item"><i class="fas fa-bell"></i> Notification</a>
+            <a href="#" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+            <a href="#" class="nav-item"><i class="fas fa-robot"></i> Quebet AI</a>
+            <a href="#" class="nav-item"><i class="fas fa-graduation-cap"></i> Courses</a>
+            <a href="#" class="nav-item"><i class="fas fa-layer-group"></i> Resources</a>
+            <a href="#" class="nav-item"><i class="fas fa-sync"></i> Updates</a>
+            <a href="#" class="nav-item"><i class="fas fa-shopping-bag"></i> Shop</a>
+            <a href="#" class="nav-item"><i class="fas fa-flask"></i> Research</a>
+        </nav>
+        <div style="margin-top: auto; color: var(--text-dim); font-size: 13px; padding-top: 15px; border-top: 1px solid var(--glass-border);"><i class="fas fa-cog"></i> Settings</div>
     </aside>
 
     <main class="main-feed">
-        <div class="feed-container">
-            <div class="tab-row">
+        <div class="feed-content">
+            
+            <div class="top-tabs">
                 <div class="tab active">Public</div>
                 <div class="tab">College</div>
                 <div class="tab">Open Idea</div>
             </div>
 
-            <div class="card">
-                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                    <img src="https://i.pravatar.cc/100?u=1" style="width: 45px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-                    <div class="input-glow" style="color: var(--text-dim); font-size: 14px;">Describe your idea .......... example post</div>
+            <div class="input-card">
+                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                    <div class="avatar-box"><i class="fas fa-user"></i></div>
+                    <div class="input-field">What's your next big idea? ..........</div>
                 </div>
-                <div style="display: flex; justify-content: center; gap: 10px;">
-                    <button class="blue-btn">Requirements (List)</button>
-                    <button class="blue-btn">Photos +</button>
-                    <button class="blue-btn">Files (Optional)</button>
+                <div style="display: flex; justify-content: center; gap: 8px;">
+                    <button style="background: var(--accent-blue); border:none; color:white; padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: bold; box-shadow: var(--blue-glow);">Requirements (List)</button>
+                    <button style="background: var(--accent-blue); border:none; color:white; padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: bold; box-shadow: var(--blue-glow);">Photos +</button>
+                    <button style="background: var(--accent-blue); border:none; color:white; padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: bold; box-shadow: var(--blue-glow);">Files (Optional)</button>
                 </div>
             </div>
 
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div class="post-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 12px; align-items: center;">
-                        <img src="https://i.pravatar.cc/100?u=2" style="width: 45px; border-radius: 50%; border: 2px solid var(--accent-blue);">
+                        <div class="avatar-box" style="border-color: var(--accent-purple); color: var(--accent-purple);"><i class="fas fa-user-circle"></i></div>
                         <div>
-                            <h4 style="margin:0;">dinesh_kumar__</h4>
-                            <p style="margin:0; font-size: 10px; color: var(--text-dim);">B.Tech ECE | AI Enthusiast</p>
+                            <h4 style="margin:0; font-size: 15px;">Siddharth Rao</h4>
+                            <p style="margin:0; font-size: 10px; color: var(--text-dim);">B.Tech ECE Student | Hyderabad | AI & Computer Vision</p>
                         </div>
                     </div>
-                    <button class="glow-btn" style="padding: 6px 20px; font-size: 12px;">+ Follow</button>
+                    <button style="background: var(--accent-purple); border:none; color:white; padding: 8px 20px; border-radius: 10px; font-weight: 800; font-size: 11px; box-shadow: var(--purple-glow);">+ Follow</button>
                 </div>
 
                 <div class="post-inner-box">
-                    <h3 style="margin:0 0 10px 0; font-size: 16px;">Smart Traffic Grid Optimization</h3>
-                    <p style="color: var(--text-dim); font-size: 13px; line-height: 1.6;">
-                        Using Computer Vision to analyze Hyderabad traffic patterns. Seeking backend contributors for database scaling.
-                    </p>
+                    <h3 style="margin:0 0 8px 0; font-size: 15px;">Automated Signal Control System</h3>
+                    <p style="color: var(--text-dim); font-size: 13px; margin: 0;">Developing a real-time traffic optimization model using OpenCV and YOLOv8.</p>
+                    <div style="text-align: right; color: var(--text-dim); font-size: 10px; margin-top: 10px;">........see more.</div>
                 </div>
 
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0;">
-                    <span class="blue-btn" style="background: rgba(0,132,255,0.15); box-shadow: none; border: 1px solid var(--accent-blue);">Python</span>
-                    <span class="blue-btn" style="background: rgba(0,132,255,0.15); box-shadow: none; border: 1px solid var(--accent-blue);">Backend Dev</span>
-                    <span class="blue-btn" style="background: rgba(0,132,255,0.15); box-shadow: none; border: 1px solid var(--accent-blue);">UI/UX</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px;">
+                    <span class="tag">Needed Role 1</span><span class="tag">Needed Role 2</span><span class="tag">System Arch</span>
+                    <span class="tag">Backend dev</span><span class="tag">Front end dev</span><span class="tag">UI/UX dev</span>
+                </div>
+
+                <div class="attachment-row">
+                    <div class="attachment-chip">Attachment 1 <i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="attachment-chip">Attachment 2 <i class="fas fa-cloud-upload-alt"></i></div>
                 </div>
 
                 <div class="img-grid">
-                    <div class="img-placeholder">Project Data <i class="fas fa-chart-bar" style="margin-left:5px"></i></div>
-                    <div class="img-placeholder">Circuit View <i class="fas fa-microchip" style="margin-left:5px"></i></div>
-                    <div class="img-placeholder">Code Snippet <i class="fas fa-code" style="margin-left:5px"></i></div>
-                    <div class="img-placeholder">Live Feed <i class="fas fa-video" style="margin-left:5px"></i></div>
+                    <div class="img-box">Project Schematic <br><i class="fas fa-image" style="margin-top:5px"></i></div>
+                    <div class="img-box">Code Preview <br><i class="fas fa-image" style="margin-top:5px"></i></div>
+                    <div class="img-box">Flowchart <br><i class="fas fa-image" style="margin-top:5px"></i></div>
+                    <div class="img-box">UI Mockup <br><i class="fas fa-image" style="margin-top:5px"></i></div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #2d2f3f;">
-                    <div style="display: flex; gap: 20px; font-size: 14px; color: var(--text-dim);">
-                        <span><i class="far fa-heart"></i> 124</span>
-                        <span><i class="far fa-comment"></i> 18</span>
+                <div style="display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #2a2c3a;">
+                    <div style="display: flex; gap: 15px; font-size: 13px; color: var(--text-dim);">
+                        <span><i class="far fa-heart"></i> Like</span>
+                        <span><i class="far fa-comment"></i> Comment</span>
+                        <span><i class="far fa-share-square"></i> Share</span>
                     </div>
-                    <button class="glow-btn">Build With</button>
+                    <button style="background: var(--accent-purple); border:none; color:white; padding: 10px 25px; border-radius: 10px; font-weight: 800; box-shadow: var(--purple-glow);">Build With</button>
                 </div>
             </div>
         </div>
     </main>
 
     <aside class="right-sidebar">
-        <div class="profile-card">
-            <img src="https://i.pravatar.cc/100?u=1" class="avatar-glow">
-            <h3 style="margin: 0;">muskan_kumar__</h3>
-            <p style="font-size: 11px; color: var(--text-dim); margin: 5px 0 20px 0;">Computer Vision Enthusiast</p>
-            <div style="display: flex; gap: 8px; justify-content: center;">
-                <span class="blue-btn">ML Dev</span>
-                <span class="blue-btn">Mentor</span>
+        <div class="profile-widget">
+            <div class="avatar-box" style="width: 70px; height: 70px; margin: 0 auto 12px; border: 3px solid var(--accent-purple); box-shadow: var(--purple-glow);"><i class="fas fa-user-tie" style="font-size: 24px; color:white"></i></div>
+            <h4 style="margin: 0;">Ananya Varma</h4>
+            <p style="font-size: 10px; color: var(--text-dim); margin-top: 5px;">B.Tech ECE Student | Hyderabad | AI Enthusiast</p>
+            <div style="display: flex; gap: 5px; justify-content: center; margin-top: 12px;">
+                <span class="tag" style="padding: 3px 8px; font-size: 8px;">Backend dev</span>
+                <span class="tag" style="padding: 3px 8px; font-size: 8px;">My skills</span>
             </div>
         </div>
 
-        <h4 style="margin: 35px 0 10px 0;"><i class="fas fa-bolt" style="color: gold;"></i> ENQUEbet News</h4>
-        <div class="news-item">
-            <strong>UI v2.4 Patch:</strong> Layered shaders and optimized shadow rendering is now live.
-        </div>
-        <div class="news-item">
-            <strong>Global Hackathon:</strong> Registrations for the Summer Sprint are now open.
+        <div class="news-widget">
+            <h4 style="margin: 0; font-size: 14px;"><i class="fas fa-bell" style="color: gold; margin-right: 8px;"></i> ENQUEbet News</h4>
+            <div class="news-item">New UI improvements are now live for a smoother and faster experience.</div>
+            <div class="news-item">Performance enhancements and bug fixes added to improve your experience.</div>
         </div>
     </aside>
 
